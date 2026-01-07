@@ -1,0 +1,18 @@
+{
+  "title": "Hass Divoom Time Frame",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Divoom Time Frame",
+        "description": "Enter the device IP and a name.",
+        "data": {
+          "host": "Device IP",
+          "name": "Name"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the device."
+    }
+  }
+}
