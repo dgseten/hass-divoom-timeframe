@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Connect to Divoom Time Frame",
+        "title": "Connect to Divoom TimesFrame",
         "description": "Enter the device IP and a name.",
         "data": {
           "host": "Device IP",

@@ -10,7 +10,7 @@ from .api import DivoomClient, DivoomApiError
 from .const import DEFAULT_NAME, DOMAIN
 
 
-class DivoomTimeFrameConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class DivoomTimesFrameConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):

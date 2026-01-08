@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from homeassistant.components.switch import SwitchEntity
+from homeassistant.components.number import NumberEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant
@@ -20,27 +20,40 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     client: DivoomClient = hass.data[DOMAIN][entry.entry_id]
-    name = entry.data.get(CONF_NAME, "Divoom Time Frame")
-    async_add_entities([DivoomScreenSwitch(hass, entry, client, name)], update_before_add=False)
+    name = entry.data.get(CONF_NAME, "Divoom TimesFrame")
+    async_add_entities(
+        [DivoomBrightnessNumber(hass, entry, client, name)],
+        update_before_add=False,
+    )
 
 
 @dataclass
-class _OptimisticState:
-    is_on: bool = True  # default “on”
+class _OptimisticBrightness:
+    value: int = 100
 
 
-class DivoomScreenSwitch(SwitchEntity):
+class DivoomBrightnessNumber(NumberEntity):
     _attr_has_entity_name = True
+    _attr_native_min_value = 0
+    _attr_native_max_value = 100
+    _attr_native_step = 1
+    _attr_icon = "mdi:brightness-6"
 
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, client: DivoomClient, device_name: str) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        entry: ConfigEntry,
+        client: DivoomClient,
+        device_name: str,
+    ) -> None:
         self.hass = hass
         self._entry = entry
         self._client = client
         self._device_name = device_name
-        self._state = _OptimisticState(is_on=True)
+        self._state = _OptimisticBrightness()
 
-        self._attr_unique_id = f"{entry.unique_id}_screen"
-        self._attr_name = "Screen"
+        self._attr_unique_id = f"{entry.unique_id}_brightness"
+        self._attr_name = "Brightness"
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -52,17 +65,11 @@ class DivoomScreenSwitch(SwitchEntity):
         )
 
     @property
-    def is_on(self) -> bool:
-        return self._state.is_on
+    def native_value(self) -> int:
+        return self._state.value
 
-    async def async_turn_on(self, **kwargs) -> None:
+    async def async_set_native_value(self, value: float) -> None:
         session = async_get_clientsession(self.hass)
-        await self._client.set_screen(session, True)
-        self._state.is_on = True
-        self.async_write_ha_state()
-
-    async def async_turn_off(self, **kwargs) -> None:
-        session = async_get_clientsession(self.hass)
-        await self._client.set_screen(session, False)
-        self._state.is_on = False
+        await self._client.set_brightness(session, int(value))
+        self._state.value = int(value)
         self.async_write_ha_state()

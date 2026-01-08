@@ -1,6 +1,6 @@
 {
-  "name": "Hass Divoom Time Frame",
-  "domain": "divoom_timeframe",
+  "name": "Divoom TimesFrame",
+  "domain": "divoom_timesframe",
   "country": ["ES", "US"],
   "homeassistant": "2025.10.0",
   "render_readme": true
